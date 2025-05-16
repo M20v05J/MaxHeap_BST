@@ -204,7 +204,7 @@ struct maxHeap{
 
     }
     void increasePriority(int Id, int newPriority){
-        for(int i=0;i<child.size();i++){
+        for(int i=0; i<child.size();i++){
             if(child[i].id==Id){
                 child[i].priority=newPriority;
                 maxHeapify(i);
@@ -240,7 +240,7 @@ struct maxHeap{
         }
         
         int indexToDelete = -1;
-        for (int i = 0; i < child.size(); ++i) {
+        for (int i = 0; i<child.size(); ++i) {
             if (child[i].id == Id) {
                 indexToDelete = i;
                 break;
@@ -253,7 +253,7 @@ struct maxHeap{
         
         child[indexToDelete] = child[child.size() - 1];
         child.pop_back();
-        if (indexToDelete < child.size()) {
+        if (indexToDelete<child.size()) {
             maxHeapify(indexToDelete);
         }
     }
@@ -270,8 +270,11 @@ struct maxHeap{
         }
     }
 
-    void levelOrder_printMaxHeap(){
-        for(int i=0;i<child.size();i++){
+    void levelOrder_printMaxHeap() {
+        if (child.size() == 0) {
+            return;
+        }
+        for(int i=0; i<child.size();i++){
             cout<<"Id: "<<child[i].id<<" Priority: "<<child[i].priority<<endl;
         }
     }
@@ -347,6 +350,16 @@ int main(){
     cout<<"-----------------------------------------------------------------------"<<endl;
     root->deleteRequest(9);
     root->pre_order_print();
+
+    maxHeap h = maxHeap();
+    h.insertHeap(4,3);
+    h.insertHeap(1,8);
+    h.insertHeap(5,4);
+    h.insertHeap(3,1);
+    h.insertHeap(5,7);
+    h.insertHeap(6,5);
+    h.insertHeap(2,2);
+    h.levelOrder_printMaxHeap();
 
     cout<<"-----------------------------------------------------------------------"<<endl;
     merge m = merge(1,"A",1);
