@@ -29,10 +29,10 @@ struct BST{
     int sizeBST(){
         int count=1;
         if(left!=NULL){
-            count+=left->sizeBST();
+            count=left->sizeBST() + count;
         }
         if(right!=NULL){
-            count+=right->sizeBST();
+            count = count + right->sizeBST();
         }
         return count;
     }
@@ -84,29 +84,29 @@ struct BST{
                 return;
             }
             else if(left==NULL){
-                BST*temp=right;
-                id=temp->id;
-                name=temp->name;
-                left=temp->left;
-                right=temp->right;
-                delete temp;
+                BST*bst=right;
+                id=bst->id;
+                name=bst->name;
+                left=bst->left;
+                right=bst->right;
+                delete bst;
             }
             else if(right==NULL){
-                BST*temp=left;
-                id=temp->id;
-                name=temp->name;
-                left=temp->left;
-                right=temp->right;
-                delete temp;
+                BST*bst=left;
+                id=bst->id;
+                name=bst->name;
+                left=bst->left;
+                right=bst->right;
+                delete bst;
             }
             else{
-                BST*temp=right;
-                while(temp->left!=NULL){
-                    temp=temp->left;
+                BST*bst=right;
+                while(bst->left!=NULL){
+                    bst=bst->left;
                 }
-                id=temp->id;
-                name=temp->name;
-                delete temp;
+                id=bst->id;
+                name=bst->name;
+                delete bst;
             }
         }
         else if(Id<id){
@@ -122,13 +122,14 @@ struct BST{
     }
 
     void pre_order_print(){
-        cout<<"Id: "<<id<<" Name: "<<name<<endl;
+        cout<<"Id: "<<id<<" Name: "<<name<<"    ";
         if(left!=NULL){
             left->pre_order_print();
         }
         if(right!=NULL){
             right->pre_order_print();
         }
+        cout<<"================================================="<<endl;
     }
 
     // bool isEmptyBST();
@@ -140,13 +141,11 @@ struct BST{
 
 };
 
-//BST*root=NULL;
-
-struct heapNode{
+struct node{
     int id;
     int priority;
 
-    heapNode(int Id, int Priority){
+    node(int Id, int Priority){
         this->id=Id;
         this->priority=Priority;
     }
@@ -154,7 +153,7 @@ struct heapNode{
 struct maxHeap{
     int id;
     int priority;
-    vector<heapNode>child;
+    vector<node>child;
 
     /*maxHeap(int Id,int Priority){
         id=Id;
@@ -185,41 +184,41 @@ struct maxHeap{
         return child.size();
     }
 
-    void maxHeapify(int index){
-        int left = index*2+1;
-        int right = index*2+2;
-        int largest = index;
-        if(left < child.size() && child[left].priority > child[largest].priority){
-            largest = left;
+    void maxHeapify(int s){
+        int left = s*2+1;
+        int right = s*2+2;
+        int big = s;
+        if(left < child.size() && child[left].priority > child[big].priority){
+            big = left;
         }
-        if(right < child.size() && child[right].priority > child[largest].priority){
-            largest = right;
+        if(right < child.size() && child[right].priority > child[big].priority){
+            big = right;
         }
-        if(largest != index){
-            heapNode temp = child[index];
-            child[index] = child[largest];
-            child[largest] = temp;
-            maxHeapify(largest);
+        if(big != s){
+            node temp = child[s];
+            child[s] = child[big];
+            child[big] = temp;
+            maxHeapify(big);
         }
 
     }
-    void increasePriority(int Id, int newPriority){
+    void increasePriority(int Id, int pri){
         for(int i=0; i<child.size();i++){
             if(child[i].id==Id){
-                child[i].priority=newPriority;
+                child[i].priority=pri;
                 maxHeapify(i);
             }
         }
     }
 
     void insertHeap(int Id, int Priority){
-        child.push_back(heapNode(Id,Priority));
-        int index=child.size()-1;
-        while(index>0 && child[index].priority>child[(index-1)/2].priority){
-            heapNode temp=child[index];
-            child[index]=child[(index-1)/2];
-            child[(index-1)/2]=temp;
-            index=(index-1)/2;
+        child.push_back(node(Id,Priority));
+        int a=child.size()-1;
+        while(a>0 && child[a].priority > child[(a-1)/2].priority){
+            node temp=child[a];
+            child[a]=child[(a-1)/2];
+            child[(a-1)/2]=temp;
+            a=(a-1)/2;
         }
     }
 
@@ -239,22 +238,22 @@ struct maxHeap{
             return;
         }
         
-        int indexToDelete = -1;
+        int inno = -1;
         for (int i = 0; i<child.size(); ++i) {
             if (child[i].id == Id) {
-                indexToDelete = i;
+                inno = i;
                 break;
             }
         }
         
-        if (indexToDelete == -1) {
+        if (inno == -1) {
             return;
         }
         
-        child[indexToDelete] = child[child.size() - 1];
+        child[inno] = child[child.size() - 1];
         child.pop_back();
-        if (indexToDelete<child.size()) {
-            maxHeapify(indexToDelete);
+        if (inno<child.size()) {
+            maxHeapify(inno);
         }
     }
 
@@ -274,11 +273,11 @@ struct maxHeap{
         if (child.size() == 0) {
             return;
         }
-        for(int i=0; i<child.size();i++){
-            cout<<"Id: "<<child[i].id<<" Priority: "<<child[i].priority<<endl;
+        for( unsigned int i=0; i<child.size();i++){
+            cout<<"Id: "<<child[i].id<<" Priority: "<<child[i].priority<<"    ";
         }
+        cout<<"================================================="<<endl;
     }
-
     
 };
 
