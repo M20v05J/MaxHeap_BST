@@ -2,387 +2,305 @@
 #include <string>
 #include <vector>
 using namespace std;
-//BST class:
-struct BST{
+
+// Just a simple BST node
+struct BST {
     int id;
     string name;
-    BST*left;
-    BST*right;
+    BST *left;
+    BST *right;
 
-    //constructor:
-    BST(int Id,string Name){
-        id=Id;
-        name=Name;
-        left=NULL;
-        right=NULL;
+    // Node constructor
+    BST(int givenId, string personName) {
+        id = givenId;
+        name = personName;
+        left = NULL;
+        right = NULL;
     }
 
-    //functions: 
-
-    //helping functions:
+    // Not super useful maybe, just checks if it's a leaf
     bool isEmptyBST() const {
-        if(left!=NULL || right!=NULL){
-            return false;
-        }
-        else
-        {
-            return true;
-        }   
+        return (left == NULL && right == NULL);
     }
 
-    int sizeBST(){
-        int sum=1;
-        if(left!=NULL){
-            sum=left->sizeBST() + sum;
+    // counts nodes in subtree - kind of basic
+    int sizeBST() {
+        int count = 1;
+        if (left) {
+            count += left->sizeBST();
         }
-        if(right!=NULL){
-            sum=sum + right->sizeBST();
+        if (right != NULL) {
+            count = count + right->sizeBST(); // intentionally verbose
         }
-        return sum;
+        return count;
     }
 
-    // important functions:
-    void insertRequest(int Id,string Name){
-        if(Id==id){
+    // Insert new ID + Name into BST
+    void insertRequest(int givenId, string personName) {
+        if (givenId == id) {
+            // Already exists, not handling duplicates
             return;
-        } 
-        if(Id<id){
-            if(left==NULL){
-                left=new BST(Id,Name);
-            }
-            else{
-                left->insertRequest(Id,Name);
-            }
         }
-        else{
-            if(right==NULL){
-                right=new BST(Id,Name);
+
+        if (givenId < id) {
+            if (left == NULL) {
+                left = new BST(givenId, personName);
+            } else {
+                left->insertRequest(givenId, personName);
             }
-            else{
-                right->insertRequest(Id,Name);
+        } else {
+            if (right == NULL) {
+                right = new BST(givenId, personName);
+            } else {
+                right->insertRequest(givenId, personName);
             }
         }
     }
 
-    void searchRequest(int Id){
-        if(Id==id){
-            cout<<"Id: "<<id<<" Name: "<<name<<endl;
-        }
-        else if(Id<id){
-            if(left!=NULL){
-                left->searchRequest(Id);
-            }
-        }
-        else{
-            if(right!=NULL){
-                right->searchRequest(Id);
-            }
+    void searchRequest(int searchId) {
+        if (searchId == id) {
+            cout << "Id: " << id << " Name: " << name << endl;
+        } else if (searchId < id) {
+            if (left) left->searchRequest(searchId);
+        } else {
+            if (right) right->searchRequest(searchId);
         }
     }
 
-    void deleteRequest(int Id){
-        if (this->isEmptyBST())
-            return;
-        if(Id==id){
-            if (left == NULL && right == NULL) {
+    // This one could use better logic but works
+    void deleteRequest(int deleteId) {
+        if (isEmptyBST()) return;
+
+        if (deleteId == id) {
+            if (!left && !right) {
                 delete this;
                 return;
             }
-            else if(left==NULL){
-                BST*bst=right;
-                id=bst->id;
-                name=bst->name;
-                left=bst->left;
-                right=bst->right;
-                delete bst;
+
+            if (!left) {
+                BST *temp = right;
+                id = temp->id;
+                name = temp->name;
+                left = temp->left;
+                right = temp->right;
+                delete temp;
+                return;
             }
-            else if(right==NULL){
-                BST*bst=left;
-                id=bst->id;
-                name=bst->name;
-                left=bst->left;
-                right=bst->right;
-                delete bst;
+
+            if (!right) {
+                BST *temp = left;
+                id = temp->id;
+                name = temp->name;
+                left = temp->left;
+                right = temp->right;
+                delete temp;
+                return;
             }
-            else{
-                BST*bst=right;
-                while(bst->left!=NULL){
-                    bst=bst->left;
-                }
-                id=bst->id;
-                name=bst->name;
-                delete bst;
+
+            // Both children exist, so use successor (lazy way)
+            BST *succ = right;
+            while (succ->left) {
+                succ = succ->left;
             }
-        }
-        else if(Id<id){
-            if(left!=NULL){
-                left->deleteRequest(Id);
-            }
-        }
-        else{
-            if(right!=NULL){
-                right->deleteRequest(Id);
-            }
+            id = succ->id;
+            name = succ->name;
+            right->deleteRequest(succ->id); // Not ideal but good enough for now
+        } else if (deleteId < id) {
+            if (left) left->deleteRequest(deleteId);
+        } else {
+            if (right) right->deleteRequest(deleteId);
         }
     }
 
-    void pre_order_print(){
-        cout<<"Id: "<<id<<" Name: "<<name<<"    ";
-        if(left!=NULL){
-            left->pre_order_print();
-        }
-        if(right!=NULL){
-            right->pre_order_print();
-        }
-        cout<<"================================================="<<endl;
+    void pre_order_print() {
+        cout << "Id: " << id << " Name: " << name << endl;
+        if (left) left->pre_order_print();
+        if (right != NULL) right->pre_order_print();
     }
 
-    //all of the functions:
-    // bool isEmptyBST();
-    // int sizeBST();
-    // void insertRequest(int Id,string Name);
-    // void searchRequest(int Id);
-    // void deleteRequest(int Id);
-    // void pre_order_print();
-
+    // was gonna add more here later
 };
-//node class for heap:
-struct node{
+
+struct node {
     int id;
     int priority;
 
-    node(int Id, int Priority){
-        this->id=Id;
-        this->priority=Priority;
+    node(int _id, int _priority) {
+        id = _id;
+        priority = _priority;
     }
 };
-struct maxHeap{
-    int id;
-    int priority;
-    vector<node>child;
 
-    /*maxHeap(int Id,int Priority){
-        id=Id;
-        priority=Priority;
-    }*/
+// Just a max heap using vector - not perfect
+struct maxHeap {
+    vector<node> child;
 
-    /* bool isEmptyHeap();
-    int sizeMaxHeap();
-    void insertHeap(int Id, int Priority);
-    void deleteMaxHeap();
-    void processHighestPriorityRequest();
-    void levelOrder_printMaxHeap();
-    void maxHeapify(int index);
-    void increasePriority(int Id, int newPriority); */
+    bool isEmptyHeap() {
+        return child.empty();
+    }
 
-    //helping :
-    bool isEmptyHeap(){
-        if (child.size()==0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
+    int sizeMaxHeap() {
+        return child.size();  // pretty basic
+    }
+
+    void maxHeapify(int i) {
+        int l = i * 2 + 1;
+        int r = i * 2 + 2;
+        int largest = i;
+
+        if (l < child.size() && child[l].priority > child[largest].priority)
+            largest = l;
+        if (r < child.size() && child[r].priority > child[largest].priority)
+            largest = r;
+
+        if (largest != i) {
+            swap(child[i], child[largest]);
+            maxHeapify(largest);
         }
     }
 
-    int sizeMaxHeap(){
-        return child.size();
-    }
-
-    void maxHeapify(int s){
-        int left = s*2+1;
-        int right = s*2+2;
-        int big = s;
-        if(left < child.size() && child[left].priority > child[big].priority){
-            big = left;
-        }
-        if(right < child.size() && child[right].priority > child[big].priority){
-            big = right;
-        }
-        if(big != s){
-            node temp = child[s];
-            child[s] = child[big];
-            child[big] = temp;
-            maxHeapify(big);
-        }
-
-    }
-    //important:
-    void increasePriority(int Id, int pri){
-        for(int i=0; i<child.size();i++){
-            if(child[i].id==Id){
-                child[i].priority=pri;
-                maxHeapify(i);
-            }
-        }
-    }
-
-    void insertHeap(int Id, int Priority){
-        child.push_back(node(Id,Priority));
-        int a=child.size()-1;
-        while(a>0 && child[a].priority > child[(a-1)/2].priority){
-            node temp=child[a];
-            child[a]=child[(a-1)/2];
-            child[(a-1)/2]=temp;
-            a=(a-1)/2;
-        }
-    }
-
-    void deleteMaxHeap(){
-        if(child.size()==0){
-            return;
-        }
-        else{
-            child[0]=child[child.size()-1];
-            child.pop_back();
-            maxHeapify(0);
-        }
-    }
-
-    void delete_with_Id(int Id) {
-        if (child.size() == 0) {
-            return;
-        }
-        
-        int inno = -1;
-        for (int i = 0; i<child.size(); ++i) {
-            if (child[i].id == Id) {
-                inno = i;
+    void increasePriority(int targetId, int newPri) {
+        for (int i = 0; i < child.size(); ++i) {
+            if (child[i].id == targetId) {
+                child[i].priority = newPri;
+                maxHeapify(i); // kinda lazy, assumes only one node per ID
                 break;
             }
         }
-        
-        if (inno == -1) {
-            return;
-        }
-        
-        child[inno] = child[child.size() - 1];
-        child.pop_back();
-        if (inno<child.size()) {
-            maxHeapify(inno);
+    }
+
+    void insertHeap(int reqId, int pri) {
+        child.push_back(node(reqId, pri));
+        int idx = child.size() - 1;
+
+        // Bubble up manually
+        while (idx > 0 && child[idx].priority > child[(idx - 1) / 2].priority) {
+            swap(child[idx], child[(idx - 1) / 2]);
+            idx = (idx - 1) / 2;
         }
     }
 
-    void processHighestPriorityRequest(){
-        if(child.size()==0){
-            return;
+    void deleteMaxHeap() {
+        if (child.empty()) return;
+
+        child[0] = child.back();
+        child.pop_back();
+        maxHeapify(0);
+    }
+
+    void delete_with_Id(int removeId) {
+        int found = -1;
+        for (int i = 0; i < child.size(); ++i) {
+            if (child[i].id == removeId) {
+                found = i;
+                break;
+            }
         }
-        else{
-            cout<<"Id: "<<child[0].id<<" Priority: "<<child[0].priority<<endl;
-            child[0]=child[child.size()-1];
-            child.pop_back();
-            maxHeapify(0);
-        }
+        if (found == -1) return;
+
+        child[found] = child.back();
+        child.pop_back();
+        if (found < child.size()) 
+        maxHeapify(found);
+    }
+
+    void processHighestPriorityRequest() {
+        if (child.empty()) return;
+        cout << "Id: " << child[0].id << " Priority: " << child[0].priority << endl;
+        deleteMaxHeap();
     }
 
     void levelOrder_printMaxHeap() {
-        if (child.size() == 0) {
-            return;
+        for (int i = 0; i < child.size(); ++i) {
+            cout << "Id: " << child[i].id << " Priority: " << child[i].priority << endl;
         }
-        for( unsigned int i=0; i<child.size();i++){
-            cout<<"Id: "<<child[i].id<<" Priority: "<<child[i].priority<<"    ";
-        }
-        cout<<"================================================="<<endl;
     }
-    
 };
 
-//merge class for merging BST and maxHeap:
-struct merge{
-    int id;
-    string name;
-    int priority;
+// Merges both BST and heap — sorta controller class
+struct merge {
     BST* bstroot;
     maxHeap heap;
 
-    merge(int Id, string Name, int Priority){
-        this->id=Id;
-        this->name=Name;
-        this->priority=Priority;
-        bstroot=NULL;
-        heap = maxHeap();
+    merge(int i, string n, int p) {
+        bstroot = new BST(i, n);
+        heap.insertHeap(i, p);
     }
-    void insert_both(int Id, string Name, int Priority){
-        if(bstroot==NULL){
-            bstroot=new BST(Id,Name);
+
+    void insert_both(int i, string n, int p) {
+        if (!bstroot) {
+            bstroot = new BST(i, n);
+        } else {
+            bstroot->insertRequest(i, n);
         }
-        else{
-            bstroot->insertRequest(Id, Name);
-        }
-        bstroot->insertRequest(Id, Name);
-        heap.insertHeap(Id, Priority);
+        heap.insertHeap(i, p);
     }
-    void delete_both(int Id){
-        bstroot->deleteRequest(Id);
-        heap.delete_with_Id(Id);
+
+    void delete_both(int i) {
+        if (bstroot) bstroot->deleteRequest(i);
+        heap.delete_with_Id(i);
     }
-    void print_both(){
-        bstroot->pre_order_print();
-        cout<<"************************************************"<<endl;
+
+    void print_both() {
+        if (bstroot) bstroot->pre_order_print();
+        cout << endl << "************************************************" << endl;
         heap.levelOrder_printMaxHeap();
     }
-    void ProcessHighestPriorityRequest(){
-        if(heap.isEmptyHeap()){
-            return;
-        }
-        else {
-            int iid = heap.child[0].id;
-            heap.processHighestPriorityRequest();
-            heap.maxHeapify(0);
-            iid = heap.child[0].id;
-            bstroot->deleteRequest(iid);
-        }
-    }
 
-        /*int iid = heap.child[0].id;
+    void ProcessHighestPriorityRequest() {
+        if (heap.isEmptyHeap()) return;
+
+        int topId = heap.child[0].id;
         heap.processHighestPriorityRequest();
-        heap.maxHeapify(0);
-        int iid = heap.child[0].id;
-        bstroot->deleteRequest(iid);*/
-
+        if (bstroot) bstroot->deleteRequest(topId);
+    }
 };
 
-int main(){
-    //some examples for BST:
-    BST*root = new BST(1,"A");
-    root->insertRequest(2,"B");
-    root->insertRequest(4,"D");
-    root->insertRequest(9,"G");
-    root->insertRequest(3,"C");
-    root->insertRequest(6,"F");
-    //1 2 4 9 3 6 ->                                                                       
+int main() {
+    // Playing with BST
+    BST* root = new BST(1, "A");
+    root->insertRequest(2, "B");
+    root->insertRequest(4, "D");
+    root->insertRequest(9, "G");
+    root->insertRequest(3, "C");
+    root->insertRequest(6, "F");
+
     root->pre_order_print();
-    cout<<"-----------------------------------------------------------------------"<<endl;
+    cout << endl << "-----------------------------------------------------------------------" << endl;
+
     root->searchRequest(4);
-    cout<<"-----------------------------------------------------------------------"<<endl;
+    cout << "-----------------------------------------------------------------------" << endl;
+
     root->deleteRequest(9);
     root->pre_order_print();
+    cout << endl;
 
-    //examples for maxHeap:
-    maxHeap h = maxHeap();
-    h.insertHeap(4,3);
-    h.insertHeap(1,8);
-    h.insertHeap(5,4);
-    h.insertHeap(3,1);
-    h.insertHeap(5,7);
-    h.insertHeap(6,5);
-    h.insertHeap(2,2);
+    // Trying out the heap
+    maxHeap h;
+    h.insertHeap(4, 3);
+    h.insertHeap(1, 8);
+    h.insertHeap(5, 4);
+    h.insertHeap(3, 1);
+    h.insertHeap(5, 7); // probably overwriting?
+    h.insertHeap(6, 5);
+    h.insertHeap(2, 2);
     h.levelOrder_printMaxHeap();
+    cout << endl;
 
-    //cout<<"-----------------------------------------------------------------------"<<endl;
-    //examples for both:
-    merge m = merge(1,"A",1);
-    m.insert_both(2,"B",2);
-    m.insert_both(4,"D",4);
-    m.insert_both(9,"G",5);
-    m.insert_both(3,"C",3);
-    m.insert_both(5,"F",6);
+    // Both structures
+    merge m(1, "A", 1);
+    m.insert_both(2, "B", 2);
+    m.insert_both(4, "D", 4);
+    m.insert_both(9, "G", 5);
+    m.insert_both(3, "C", 3);
+    m.insert_both(5, "F", 6);
+
     m.print_both();
-    //cout<<"-----------------------------------------------------------------------"<<endl;
+    cout << endl << "-----------------------------------------------------------------------" << endl;
+
     m.delete_both(5);
-    cout<<"-----------------------------------------------------------------------"<<endl;
+    cout << "-----------------------------------------------------------------------" << endl;
     m.ProcessHighestPriorityRequest();
+
     return 0;
 }
