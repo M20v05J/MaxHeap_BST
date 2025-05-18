@@ -31,17 +31,17 @@ struct BST{
     }
 
     int sizeBST(){
-        int count=1;
+        int sum=1;
         if(left!=NULL){
-            count=left->sizeBST() + count;
+            sum=left->sizeBST() + sum;
         }
         if(right!=NULL){
-            count = count + right->sizeBST();
+            sum=sum + right->sizeBST();
         }
-        return count;
+        return sum;
     }
 
-    // khode asl functions:
+    // important functions:
     void insertRequest(int Id,string Name){
         if(Id==id){
             return;
