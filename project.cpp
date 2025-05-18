@@ -2,13 +2,14 @@
 #include <string>
 #include <vector>
 using namespace std;
-
+//BST class:
 struct BST{
     int id;
     string name;
     BST*left;
     BST*right;
 
+    //constructor:
     BST(int Id,string Name){
         id=Id;
         name=Name;
@@ -16,6 +17,9 @@ struct BST{
         right=NULL;
     }
 
+    //functions: 
+
+    //helping functions:
     bool isEmptyBST() const {
         if(left!=NULL || right!=NULL){
             return false;
@@ -37,6 +41,7 @@ struct BST{
         return count;
     }
 
+    // khode asl functions:
     void insertRequest(int Id,string Name){
         if(Id==id){
             return;
@@ -132,6 +137,7 @@ struct BST{
         cout<<"================================================="<<endl;
     }
 
+    //all of the functions:
     // bool isEmptyBST();
     // int sizeBST();
     // void insertRequest(int Id,string Name);
@@ -140,7 +146,7 @@ struct BST{
     // void pre_order_print();
 
 };
-
+//node class for heap:
 struct node{
     int id;
     int priority;
@@ -169,6 +175,7 @@ struct maxHeap{
     void maxHeapify(int index);
     void increasePriority(int Id, int newPriority); */
 
+    //helping :
     bool isEmptyHeap(){
         if (child.size()==0)
         {
@@ -202,6 +209,7 @@ struct maxHeap{
         }
 
     }
+    //important:
     void increasePriority(int Id, int pri){
         for(int i=0; i<child.size();i++){
             if(child[i].id==Id){
@@ -281,6 +289,7 @@ struct maxHeap{
     
 };
 
+//merge class for merging BST and maxHeap:
 struct merge{
     int id;
     string name;
@@ -336,6 +345,7 @@ struct merge{
 };
 
 int main(){
+    //some examples for BST:
     BST*root = new BST(1,"A");
     root->insertRequest(2,"B");
     root->insertRequest(4,"D");
@@ -350,6 +360,7 @@ int main(){
     root->deleteRequest(9);
     root->pre_order_print();
 
+    //examples for maxHeap:
     maxHeap h = maxHeap();
     h.insertHeap(4,3);
     h.insertHeap(1,8);
@@ -360,7 +371,8 @@ int main(){
     h.insertHeap(2,2);
     h.levelOrder_printMaxHeap();
 
-    cout<<"-----------------------------------------------------------------------"<<endl;
+    //cout<<"-----------------------------------------------------------------------"<<endl;
+    //examples for both:
     merge m = merge(1,"A",1);
     m.insert_both(2,"B",2);
     m.insert_both(4,"D",4);
@@ -368,7 +380,7 @@ int main(){
     m.insert_both(3,"C",3);
     m.insert_both(5,"F",6);
     m.print_both();
-    cout<<"-----------------------------------------------------------------------"<<endl;
+    //cout<<"-----------------------------------------------------------------------"<<endl;
     m.delete_both(5);
     cout<<"-----------------------------------------------------------------------"<<endl;
     m.ProcessHighestPriorityRequest();
